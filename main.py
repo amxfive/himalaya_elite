@@ -401,7 +401,17 @@ with col_season_1:
     season_dist = df_peak_context.groupby('season')['totmembers'].sum().reset_index()
     total_climbers_peak = season_dist['totmembers'].sum()
     season_dist['percentage'] = (season_dist['totmembers'] / total_climbers_peak) * 100
-    season_dist['season'] = season_dist['season'].astype(str)
+    # Definimos el diccionario de traducción
+    traduccion_estaciones = {
+        'Spring': 'Primavera',
+        'Autumn': 'Otoño',
+        'Winter': 'Invierno',
+        'Summer': 'Verano',
+        'Unknown': 'Desconocido' # Por si acaso hay datos sucios
+    }
+    
+    # Aplicamos la traducción
+    season_dist['season'] = season_dist['season'].astype(str).replace(traduccion_estaciones)
 
     # Gráfico de Barras Simple o Pastel. 
     # Barras es mejor para comparar magnitudes claras.
@@ -420,7 +430,7 @@ with col_season_1:
     st.plotly_chart(fig_season, use_container_width=True)
 
 with col_season_2:
-    st.markdown("### 💡 Insight")
+    st.markdown("### 💡 Nota")
     if not season_dist.empty:
         top_season = season_dist.sort_values('totmembers', ascending=False).iloc[0]
         st.write(f"Para **{target_peak_shared if target_peak_shared != 'TODAS LAS MONTAÑAS' else 'el Himalaya en general'}**, la temporada predominante es **{top_season['season']}**.")
